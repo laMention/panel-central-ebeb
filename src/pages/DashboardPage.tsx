@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlatformState } from "@/hooks/usePlatformState";
+import { usePlatformSurfaces } from "@/hooks/usePlatformSurfaces";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { SurfaceCard } from "@/components/SurfaceCard";
 import type { PlatformStatut } from "@/repositories/PlatformStateRepository";
 
 const STATUTS: { value: PlatformStatut; label: string; description: string }[] = [
@@ -20,6 +22,7 @@ const BADGE_STYLES: Record<PlatformStatut, string> = {
 export function DashboardPage() {
   const { admin, logout } = useAuth();
   const { etat, loading, error, changerStatut } = usePlatformState();
+  const { etats: surfaceEtats, changerStatutSurface } = usePlatformSurfaces();
 
   const [statut, setStatut] = useState<PlatformStatut>("ACTIVE");
   const [message, setMessage] = useState("");
@@ -103,6 +106,27 @@ export function DashboardPage() {
             {etat.message && <p className="mt-2 text-sm text-slate-700">{etat.message}</p>}
           </div>
         )}
+
+        <div className="mt-6">
+          <h2 className="text-sm font-semibold text-slate-900">Activation indépendante des surfaces</h2>
+          <p className="mt-0.5 text-xs text-slate-500">
+            Contrôle séparé, sans effet sur le kill switch global ni sur l'autre surface.
+          </p>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2">
+            <SurfaceCard
+              title="Site Web"
+              description="Site public grand public."
+              etat={surfaceEtats?.SITE_WEB ?? null}
+              onChange={(statut, message) => changerStatutSurface("SITE_WEB", { statut, message })}
+            />
+            <SurfaceCard
+              title="Panel Admin"
+              description="Panel d'administration Ebeb Finance."
+              etat={surfaceEtats?.PANEL_ADMIN ?? null}
+              onChange={(statut, message) => changerStatutSurface("PANEL_ADMIN", { statut, message })}
+            />
+          </div>
+        </div>
 
         <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
           <h2 className="text-sm font-semibold text-slate-900">Changer l'état de la plateforme</h2>

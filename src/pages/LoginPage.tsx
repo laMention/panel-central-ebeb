@@ -1,7 +1,8 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { ApiError } from "@/lib/api/handle";
+import { consumeSessionExpiredFlag } from "@/lib/sessionExpiry";
 
 export function LoginPage() {
   const { login, isAuthenticated } = useAuth();
@@ -10,6 +11,12 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (consumeSessionExpiredFlag()) {
+      setError("Votre session a expiré, veuillez vous reconnecter.");
+    }
+  }, []);
 
   if (isAuthenticated) return <Navigate to="/" replace />;
 

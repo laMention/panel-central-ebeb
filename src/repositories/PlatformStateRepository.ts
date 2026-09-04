@@ -67,7 +67,9 @@ export async function login(email: string, password: string, token?: string) {
 }
 
 export async function logout(token: string) {
-  await post(`${BASE}/auth/se-deconnecter`, { token });
+  // La déconnexion volontaire gère déjà elle-même le nettoyage/la redirection
+  // (voir useAuth.logout) — ne pas déclencher la gestion globale de 401.
+  await post(`${BASE}/auth/se-deconnecter`, { token, skipSessionExpiryHandling: true });
 }
 
 export async function getEtat(token: string) {
