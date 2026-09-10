@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 import * as PlatformStateRepository from "@/repositories/PlatformStateRepository";
 import type { AdminResume } from "@/repositories/PlatformStateRepository";
+import { resetSessionExpiry } from "@/lib/sessionExpiry";
 
 const STORAGE_KEY = "control-panel-token";
 
@@ -22,6 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const result = await PlatformStateRepository.login(email, password);
     const bearer = result.token.replace(/^Bearer\s+/i, "");
     sessionStorage.setItem(STORAGE_KEY, bearer);
+    resetSessionExpiry();
     setToken(bearer);
     setAdmin(result.admin);
   }, []);
